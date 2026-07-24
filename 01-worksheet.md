@@ -63,11 +63,11 @@ Hãy sử dụng **4 Lenses** dưới đây để quét qua hoạt động vận
 ### 📝 List bài toán của tôi:
 | # | Subsidiary (VinFast/Xanh SM...) | Lens | Mô tả ngắn bài toán |
 |---|----------------------------------|------|---------------------|
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
+| 1 | VinFast | Lặp lại (Repetitive) | Nhân viên bảo hành phải đối chiếu thủ công log lỗi pin từ xe với danh sách mã lỗi chuẩn để xác định có thuộc diện bảo hành hay không, lặp lại hàng trăm lượt/ngày tại các trung tâm dịch vụ. |
+| 2 | Xanh SM (GSM) | Stakeholder Pain | Tài xế thường xuyên phàn nàn vì hệ thống điều vận gợi ý điểm đón khách không sát vị trí thực tế (nằm trong hẻm, sai tầng ở TTTM), khiến tài xế phải gọi điện xác nhận lại với khách, kéo dài thời gian chờ. |
+| 3 | Vinhomes | Tốn thời gian (Time-consuming) | Nhân viên chăm sóc cư dân phải tự đọc và soạn phản hồi thủ công cho từng đánh giá 1-2 sao trên ứng dụng quản lý cư dân, mỗi phản hồi mất 8-10 phút do phải tra cứu hồ sơ căn hộ liên quan. |
+| 4 | Vinmec | AI có thể tốt hơn (AI-upgrade) | Việc sắp xếp lịch hẹn tái khám và nhắc uống thuốc cho bệnh nhân mãn tính hiện dựa vào tổng đài gọi điện thủ công, phản hồi chậm và không cá nhân hóa theo phác đồ điều trị của từng bệnh nhân. |
+| 5 | Vinpearl / VinWonders | Lặp lại (Repetitive) | Nhân viên quầy vé phải nhập liệu thủ công thông tin đặt vé nhóm/đoàn từ email hoặc tin nhắn Zalo vào hệ thống bán vé nội bộ, dễ sai sót số lượng và loại vé vào giờ cao điểm. |
 
 ---
 
