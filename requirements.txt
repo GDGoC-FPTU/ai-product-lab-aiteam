@@ -1,2 +1,7 @@
-# Environment Dependencies
-# List all required python packages here.
+# Environment Dependencies — Lab 02: AI Product Scoping (Vin Smart Future)
+#
+# SDK gọi Gemini 2.5 Flash (bản mới, khuyến nghị).
+google-genai>=1.0.0
+
+# Framework kiểm thử (autograder / self-check).
+pytest>=8.0.0
