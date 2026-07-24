@@ -1,7 +1,7 @@
 # 📝 03 — AI Log & Reflection Journal: Working with AI as a Thought-Partner
 
-**Họ và tên:** Nguyễn Văn An  
-**Mã số sinh viên (MSSV):** 20261234  
+**Họ và tên:** Quỳnh Phương  
+**Mã số sinh viên (MSSV):** SE202601  
 **Vai trò:** AI Engineer — Vin Smart Future  
 
 ---

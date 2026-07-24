@@ -1,7 +1,7 @@
 # 🔍 01 — Problem Scan & Quick Problem Cards (Vin Smart Future)
 
-**Họ và tên:** Nguyễn Văn An  
-**Mã số sinh viên (MSSV):** 20261234  
+**Họ và tên:** Quỳnh Phương  
+**Mã số sinh viên (MSSV):** SE202601  
 **Đơn vị:** Vin Smart Future — AI Product Engineering Lab  
 
 ---
