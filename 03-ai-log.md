@@ -4,7 +4,7 @@
 
 - Họ và tên: Ong Xuân Sơn
 - MSSV: 2A202601327
-- Nhóm:
+- Nhóm: AITEAM
 
 ---
 
