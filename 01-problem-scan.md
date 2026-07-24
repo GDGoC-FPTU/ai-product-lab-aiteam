@@ -5,7 +5,7 @@
 | Trường | Thông tin |
 |---|---|
 | Nhóm | AI TEAM |
-| Họ và tên | Dung |
+| Họ và tên | Nguyễn Duy Dũng |
 | Mã HV | 2A202601505 |
 | Email | dgx3811@gmail.com |
 
