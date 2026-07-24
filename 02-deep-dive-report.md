@@ -1,146 +1,82 @@
 # 02 — Deep-Dive Report (Bài nhóm)
 
-> **Deliverable nhóm (G1–G4 — 40 điểm).** Phân tích sâu bài toán AI mà cả nhóm thống nhất chọn.
+> **Tên nhóm:** ___________________________________
+>
+> **Thành viên (Họ và tên — MSSV):**
+> 1. ___________________________________
+> 2. ___________________________________
+> 3. ___________________________________
+> 4. ___________________________________
 
 ---
 
-## 👥 Thông tin nhóm
-
-| | |
-|---|---|
-| **Tên nhóm** | AI_Team |
-| **Mảng kinh doanh** | Xanh SM (GSM) — Vận hành xe điện thời gian thực |
-| **Bài toán chọn Deep-Dive** | Trợ lý điều vận sự cố hết pin thực địa (Field-Incident Dispatch Co-pilot) |
-
-| # | Họ và tên | MSSV | Nhiệm vụ chính |
-|---|-----------|------|----------------|
-| 1 | Kim Mạnh Hưng | 2A202601679 | Prompt prototype (Phase 4 code) |
-| 2 | Ong Xuân Sơn | 2A202601327 | Problem Statement & Evaluate |
-| 3 | Đinh Lê Quỳnh Phương | 2A202600294 | Future-state & AI Fit |
-| 4 | Phùng Văn Linh | 2A202600123 | Workflow mapping (04-diagram) |
-
----
-
-## 🗳️ Quyết định lựa chọn bài toán
-
-Nhóm quyết định Deep-Dive bài toán **“Xanh SM — Trợ lý điều vận sự cố hết pin thực địa”**.
-
-**Lý do chọn & loại các phương án khác:**
-- ✅ **Chọn Xanh SM (sự cố thực địa):** tác động real-time trực tiếp lên doanh thu, tần suất cao (~80 lượt/ngày ở Hà Nội), kiến trúc gọn (LLM Feature), và có ranh giới an toàn đo được để lập trình prototype.
-- ❌ **Vinhomes (phản ánh cư dân):** giá trị tốt nhưng rủi ro sai sót liên quan phí quản lý/tranh chấp căn hộ → cần Rule-based router + dữ liệu gán nhãn trước.
-- ❌ **Vinmec (discharge summary):** thuộc mảng y tế nhạy cảm, ranh giới an toàn phải cực nghiêm; để lại giai đoạn sau khi đã có quy trình kiểm duyệt lâm sàng.
+## 🎯 Quyết định lựa chọn
+**Bài toán được chọn để Deep-Dive:** Nhắc lịch tái khám và uống thuốc cá nhân hóa cho bệnh nhân mãn tính tại Vinmec.
 
 ---
 
 ## 🏗️ Phase 3 — DEEP-DIVE
 
-### 3.1. Current-State Workflow Mapping (G1 — 20đ)
-
-> Sơ đồ vẽ tay/vẽ số chi tiết nằm ở file **[04-workflow-diagram.png](04-workflow-diagram.png)**. Dưới đây là bản text đồng bộ với sơ đồ đó.
-
-```text
-[Tài xế]                 [Điều phối viên — Dispatcher]                       [Hệ thống]
-   │                                                                             │
-   │  ① Gọi tổng đài báo hết pin (⏱ 2') ──🔄 Handoff (thoại)──►  Ghi log sự cố   │
-   │                                                                             │
-   │                     ② Tra vị trí GPS xe trên bản đồ nội bộ (⏱ 2')           │
-   │                          │                                                  │
-   │                          ▼                                                  │
-   │                     ③ Tra dashboard trạm sạc VinFast tìm trụ trống          │
-   │                        + đúng cổng sạc theo dòng xe  🔴 (⏱ 5')              │
-   │                          │                                                  │
-   │                          ▼                                                  │
-   │                     ④ Soạn tin nhắn chỉ đường bằng tay,                     │
-   │                        gửi qua App tài xế  🔴 (⏱ 5')  ──🔄 Handoff──►  App   │
-   │                          │                                                  │
-   │                          ▼                                                  │
-   │                     ⑤ Gọi xe cứu hộ nếu pin quá thấp (⏱ 1')                 │
-   ▼                                                                             │
-[Nhận hướng dẫn]                                                                 │
-
-🔴 Bottleneck: Bước ③ (tra trạm) & ④ (soạn tin) — chiếm 10/15 phút, dễ chọn nhầm trạm/cổng sạc.
-🔄 Handoff: (a) thoại tài xế→điều phối; (b) tin nhắn điều phối→App tài xế.
-⏱ TỔNG THỜI GIAN THỦ CÔNG = 15 phút/lượt.
-```
-
-**Con số vận hành (baseline giả định để scoping):**
-- ~80 sự cố pin thực địa/ngày tại Hà Nội × 15 phút = **20 giờ-người/ngày** cho riêng khâu này.
-- Giờ cao điểm, hàng chờ xử lý tăng → tài xế chờ trung bình 15–25 phút → **~15% cuốc bị bỏ lỡ** trong thời gian xe "chết".
-
-### 3.2. Problem Statement (6-field) & Metrics (G2 — 20đ)
+### 3.2. Problem Statement (6-field) & Metrics
 
 | Field | Nội dung chi tiết |
 |---|---|
-| **1. Actor / Operator** | Điều phối viên (Dispatcher) tại Trung tâm Điều vận Xanh SM Hà Nội; ca 8 tiếng, cao điểm 7–9h & 17–20h. |
-| **2. Current Workflow** | Tài xế gọi báo hết pin → điều phối viên (1) tra GPS xe, (2) mở dashboard trạm sạc VinFast tìm trụ trống đúng cổng sạc theo dòng xe (VF5/VFe34/VF8), (3) gõ tay tin nhắn chỉ đường tiếng Việt gửi qua App, (4) gọi cứu hộ nếu pin quá thấp. 5 bước, hoàn toàn thủ công, dùng bản đồ nội bộ + dashboard + App nhắn tin. Tổng ~15 phút/lượt. |
-| **3. Bottleneck** | Bước ③ & ④ (~10 phút): tra trạm sạc trống *phù hợp cổng sạc* và soạn tin hướng dẫn đường đi thân thiện — đây là khâu cần xử lý & sinh ngôn ngữ tự nhiên nhiều nhất, dễ lỗi nhất (chọn nhầm trạm không tương thích cổng sạc). |
-| **4. Business Impact** | ~80 lượt/ngày × 15 phút = **20 giờ-người/ngày** lãng phí ở Hà Nội. Thời gian chờ của tài xế kéo dài → rò rỉ ~15% doanh thu cuốc trong lúc xe "chết"; tăng stress tài xế → ảnh hưởng tỉ lệ giữ chân. Nếu nhân rộng toàn quốc, tổn thất tăng theo cấp số. |
-| **5. Success Metric** | **(1) Efficiency:** giảm thời gian xử lý sự cố từ **15 phút → dưới 3 phút** (–80%). **(2) Quality:** tỉ lệ hướng dẫn đúng trạm & đúng cổng sạc **≥ 98%**. **(3) Safety:** **0** trường hợp AI đề xuất trạm > 5km khi pin < 5%. **(4) Adoption:** ≥ 90% draft được điều phối viên duyệt & gửi với ≤ 1 lần chỉnh sửa. |
-| **6. Operational Boundary** | **ĐƯỢC PHÉP:** gọi API định vị xe, API trạm sạc VinFast trống, DRAFT tin nhắn hướng dẫn (gắn thẻ `[DRAFT_ONLY]`). **TUYỆT ĐỐI KHÔNG:** (a) tự động gửi tin cho tài xế khi chưa có điều phối viên bấm duyệt — bắt buộc **HITL**; (b) đề xuất trạm sạc **sai cổng sạc** với dòng xe; (c) khi pin **< 5%**, không được chỉ tài xế tới trạm cách **> 5km** — phải chuyển sang điều **xe sạc di động (mobile charger)**. Điểm cần duyệt: mọi tin trước khi gửi. |
+| **1. Actor / Operator** | Nhân viên tổng đài chăm sóc bệnh nhân (Patient Care) tại các bệnh viện Vinmec, phụ trách nhắc lịch tái khám và tuân thủ điều trị cho nhóm bệnh nhân mãn tính (tiểu đường, tim mạch, hậu phẫu...). |
+| **2. Current Workflow** | Hằng ngày, NV tổng đài tra danh sách bệnh nhân đến hạn tái khám/uống thuốc từ hệ thống quản lý hồ sơ bệnh án (HIS), tra cứu phác đồ điều trị riêng của từng bệnh nhân, sau đó gọi điện thoại thủ công để nhắc lịch/thuốc và ghi chú lại kết quả cuộc gọi vào hồ sơ. Công cụ sử dụng: hệ thống HIS nội bộ + điện thoại tổng đài. |
+| **3. Bottleneck** | Bước tra cứu phác đồ điều trị và gọi điện thủ công cho từng bệnh nhân là chậm nhất và dễ bỏ sót nhất, vì nội dung nhắc cần cá nhân hóa theo phác đồ (không thể dùng kịch bản chung), tốn 6-8 phút/bệnh nhân và phụ thuộc hoàn toàn vào số lượng nhân viên trực tổng đài. |
+| **4. Business Impact** | Với số lượng bệnh nhân mãn tính lớn tại mỗi bệnh viện, tổng đài chỉ đủ nhân lực gọi được cho khoảng 60-70% danh sách mỗi ngày, phần còn lại bị trễ hoặc bỏ sót nhắc lịch, kéo theo tỷ lệ tái khám đúng hạn hiện chỉ đạt ~65%, ảnh hưởng đến hiệu quả điều trị và tăng nguy cơ tái nhập viện cấp cứu (chi phí điều trị cao hơn nhiều so với chi phí phòng ngừa). |
+| **5. Success Metric** | Giảm số cuộc gọi thủ công bắt buộc từ 100% xuống dưới 30% số ca (70% được xử lý qua nhắc tự động qua app/SMS do AI soạn); tỷ lệ bệnh nhân tái khám đúng hạn tăng từ 65% lên trên 85% trong vòng 3 tháng triển khai. |
+| **6. Operational Boundary** | AI được phép: tổng hợp phác đồ điều trị có sẵn trong hồ sơ để soạn nội dung nhắc lịch/thuốc cá nhân hóa, gửi qua kênh tin nhắn/app. AI TUYỆT ĐỐI không được: tự ý thay đổi liều lượng/phác đồ thuốc, đưa ra chẩn đoán hoặc tư vấn y khoa mới, liên hệ trực tiếp với bệnh nhân qua giọng nói AI mà không qua kiểm duyệt nội dung. Điểm cần duyệt: mọi nội dung nhắc lịch liên quan đến thay đổi thuốc/liều lượng phải được bác sĩ/điều dưỡng phụ trách xác nhận trước khi gửi; các ca bệnh nhân không phản hồi sau nhắc tự động phải được chuyển về cho nhân viên tổng đài gọi điện trực tiếp (fallback). |
 
-### 3.3. Future-State Flow & AI Fit (G3 — 10đ)
+### 3.3. Future-State Flow & AI Fit
 
-**AI-Fit Matrix — nhóm chọn `LLM Feature`:**
+**AI-Fit Matrix:** [ ] Rule / State-Machine  [x] LLM Feature  [ ] Agentic Loop
 
-| Lựa chọn | Phù hợp? | Lý do |
-|---|---|---|
-| Rule / State-Machine | Một phần | Tốt cho lọc trạm theo cổng sạc & khoảng cách, nhưng *không* sinh được tin nhắn hướng dẫn tiếng Việt tự nhiên → dùng làm lớp kiểm tra an toàn (guardrail). |
-| **LLM Feature** ✅ | **Có** | Cần hiểu ngữ cảnh + sinh tin nhắn tiếng Việt thân thiện, trong khi quy trình có cấu trúc cố định → chỉ cần 1 lần gọi LLM có system prompt chặt + HITL. |
-| Agentic Loop | Không | Không cần chuỗi hành động tự trị nhiều bước; rủi ro điều phối sai trạm khiến xe cạn pin giữa đường → phải giữ con người ở vòng duyệt. |
+> Bài toán cần soạn nội dung nhắc lịch cá nhân hóa theo phác đồ điều trị của từng bệnh nhân (ngôn ngữ tự nhiên, không thể liệt kê hết bằng rule cứng), nhưng phạm vi tác vụ đơn giản, không cần AI tự quyết định chuỗi hành động nhiều bước → phù hợp **LLM Feature** hơn là Agentic Loop; đồng thời không thể chỉ dùng Rule/State-Machine vì nội dung nhắc cần diễn đạt tự nhiên và linh hoạt theo từng phác đồ.
 
-**Future-State Flow:**
+**Future-State Flow** (mô tả bước bằng text-diagram, đánh dấu rõ):
+* 🔵 **AI Step:** Tác vụ LLM xử lý.
+* 🟢 **Human Step (HITL):** Bước con người phê duyệt/review.
+* ↩️ **Fallback:** Kế hoạch dự phòng khi LLM trả về kết quả lỗi hoặc không tự tin.
 
-```text
-┌──────────────┐   ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
-│ ① Nhận cuộc  │   │ ② 🔵 AI/System   │   │ ③ 🔵 AI draft    │   │ ④ 🟢 Dispatcher  │
-│    gọi sự cố │──►│ auto-pull vị trí │──►│ tin [DRAFT_ONLY] │──►│ 1-click DUYỆT    │
-│              │   │ + trạm sạc trống │   │ chỉ đường/hướng  │   │ & gửi tài xế     │
-│              │   │ (lọc theo cổng)  │   │ dẫn tiếng Việt   │   │ (HITL bắt buộc)  │
-└──────────────┘   └──────────────────┘   └──────────────────┘   └──────────────────┘
-                              │                                            │
-              (Guardrail rule: pin < 5% & trạm > 5km?)                     ▼
-                              │                                     [Tài xế nhận tin]
-                              ▼ nếu ĐÚNG
-                    ⛑️ AI trả JSON:
-                    {"action":"dispatch_mobile_charger", ...}
-                    → điều xe sạc di động, KHÔNG chỉ trạm xa.
-
-↩️ FALLBACK: Nếu LLM lỗi/timeout/không tự tin → hệ thống hiện cảnh báo, Dispatcher
-   quay lại soạn tay như quy trình cũ (degrade an toàn, không chặn nghiệp vụ).
-
-🔵 AI Step   🟢 Human Step (HITL)   ⛑️ Safety branch   ↩️ Fallback
 ```
-
-**Thời gian kỳ vọng future-state:** ① 2′ + ② ~15s (auto) + ③ ~10s (draft) + ④ ~20s (duyệt) ≈ **dưới 3 phút/lượt**.
+1. Hệ thống HIS tự động lọc danh sách bệnh nhân mãn tính đến hạn tái khám/uống thuốc trong ngày.
+        │
+        ▼
+2. 🔵 AI Step: LLM đọc phác đồ điều trị + lịch sử tái khám của từng bệnh nhân,
+   soạn nội dung nhắc lịch/thuốc cá nhân hóa (giọng văn thân thiện, đúng thuật ngữ y khoa cơ bản).
+        │
+        ▼
+3. 🟢 Human Step (HITL): Nếu nội dung nhắc có đề cập thay đổi thuốc/liều lượng
+   hoặc AI tự đánh giá độ tin cậy thấp → điều dưỡng/bác sĩ phụ trách xem và duyệt trước khi gửi.
+   Nếu nội dung chỉ là nhắc lịch thông thường, không đổi thuốc → gửi thẳng (không cần duyệt).
+        │
+        ▼
+4. Hệ thống gửi nhắc lịch qua app/SMS cho bệnh nhân.
+        │
+        ▼
+5. Theo dõi phản hồi/xác nhận của bệnh nhân trong 24h.
+        │
+        ├──> Bệnh nhân xác nhận/đặt lịch thành công → Kết thúc, cập nhật hồ sơ.
+        │
+        └──> ↩️ Fallback: Không phản hồi sau 24h, hoặc AI không tự tin khi soạn nội dung
+             (VD: phác đồ phức tạp, bệnh nhân có tương tác thuốc đặc biệt)
+             → Chuyển ca về hàng đợi cho nhân viên tổng đài gọi điện trực tiếp như quy trình cũ.
+```
 
 ---
 
-## 🏁 Phase 5 — EVALUATE (G4 — 10đ)
+## 🏁 Phase 5 — EVALUATE
 
-### AI Readiness Checklist
+### AI Readiness Checklist:
+1. [x] Chúng tôi có sẵn dữ liệu mẫu/logs sạch để test? — Có: hệ thống HIS của Vinmec đã lưu trữ phác đồ điều trị và lịch sử tái khám có cấu trúc, đủ để dùng làm input cho LLM và test prototype.
+2. [x] Rủi ro khi AI sai có nằm trong tầm kiểm soát (qua HITL hoặc Fallback)? — Có: mọi nội dung liên quan thay đổi thuốc/liều lượng đều qua duyệt của điều dưỡng/bác sĩ (HITL); ca không phản hồi hoặc AI không tự tin sẽ fallback về gọi điện thủ công như quy trình cũ, không có bước nào AI tự quyết định hoàn toàn.
+3. [ ] Stakeholders sẵn sàng thay đổi quy trình làm việc cũ? — Chưa chắc chắn: cần họp với đội tổng đài và ban điều dưỡng để xác nhận họ đồng thuận chuyển một phần công việc sang kênh app/SMS tự động, và đào tạo quy trình duyệt nội dung mới trước khi triển khai.
 
-| # | Tiêu chí | Trạng thái | Ghi chú |
-|---|----------|-----------|---------|
-| 1 | Có dữ liệu mẫu/logs sạch để test? | ✅ Có | Log sự cố + lịch sử tin nhắn điều phối 6 tháng; API trạm sạc VinFast sẵn có. |
-| 2 | Rủi ro AI sai nằm trong tầm kiểm soát (HITL/Fallback)? | ✅ Có | Mọi tin phải điều phối viên duyệt; guardrail pin<5% chặn kịch bản nguy hiểm nhất; có fallback soạn tay. |
-| 3 | Stakeholders sẵn sàng đổi quy trình? | 🟡 Một phần | Khối điều vận ủng hộ; cần đào tạo ngắn & thống nhất SLA duyệt draft. |
+### Quyết định cuối cùng của Ban Giám Đốc Vin Smart Future:
+[ ] **GO (Bắt đầu xây dựng Prototype):** Bắt đầu phát triển với scope hẹp.
+[x] **NOT YET (Cần tích lũy thêm dữ liệu/xác lập baseline):** Trì hoãn để chuẩn bị thêm.
+[ ] **NO-GO (Không khả thi / Rule-based tốt hơn):** Hủy bỏ dự án AI này.
 
-### Quyết định cuối cùng: ✅ **GO** (scope hẹp)
-
-> **[x] GO** — Bắt đầu xây Prototype với scope hẹp: chỉ sự cố *hết pin* tại *Hà Nội*, chạy song song (shadow) với điều phối viên trong 2 tuần trước khi bật gửi thật.
-
-**Justification (bằng chứng kỹ thuật + chi phí):**
-
-- **Kỹ thuật:** Bài toán có cấu trúc cố định, chỉ cần 1 lần gọi LLM + guardrail rule → độ phức tạp thấp, rủi ro kiểm soát được bằng HITL. Prototype (Phase 4) đã chứng minh 2 ranh giới cốt lõi (thẻ `[DRAFT_ONLY]` và pin < 5% → `dispatch_mobile_charger`) **giữ vững trước 3 adversarial test** (kể cả prompt injection) — xem [starter-code/prompt_prototype.py](starter-code/prompt_prototype.py).
-- **Ước lượng chi phí vận hành (LLM):** ~80 lượt/ngày × ~1.5K token/lượt ≈ 120K token/ngày ≈ **3.6M token/tháng**. Với Gemini 2.5 Flash, chi phí token gần như không đáng kể so với **20 giờ-người/ngày** tiết kiệm được → ROI dương rõ ràng ngay ở quy mô Hà Nội. (Nhóm chốt lại đơn giá theo bảng giá hiện hành khi triển khai.)
-- **Lợi ích kỳ vọng:** giảm ~80% thời gian xử lý (15′→<3′), thu hồi phần lớn 20 giờ-người/ngày, giảm ~15% rò rỉ doanh thu do xe "chết", cải thiện trải nghiệm tài xế.
-- **Điều kiện GO:** giữ scope hẹp; đo baseline 2 tuần; chỉ bật auto-send-after-approval khi tỉ lệ duyệt-không-sửa ≥ 90% và 0 vi phạm guardrail an toàn.
-
-**Rủi ro & giảm thiểu:**
-
-| Rủi ro | Mức | Giảm thiểu |
-|---|---|---|
-| AI đề xuất trạm sai cổng sạc | Cao | Rule lọc cổng sạc *trước* khi LLM soạn tin; QA đối chiếu. |
-| AI chỉ trạm xa khi pin cạn | Nghiêm trọng | Guardrail cứng: pin<5% → `dispatch_mobile_charger`; đã test adversarial. |
-| Điều phối viên "duyệt mù" | Trung bình | Thẻ `[DRAFT_ONLY]` + UI bắt buộc xác nhận; audit tỉ lệ chỉnh sửa. |
-| LLM lỗi/timeout giờ cao điểm | Trung bình | Fallback soạn tay; timeout ngắn; hàng đợi ưu tiên. |
+**Justification (Lý giải quyết định dựa trên bằng chứng kỹ thuật và chi phí):**
+> Về mặt kỹ thuật, dữ liệu và ranh giới an toàn (HITL + Fallback) đã đủ vững để bắt đầu xây dựng prototype ở quy mô hẹp (2/3 tiêu chí checklist đạt). Tuy nhiên, quyết định là **NOT YET** thay vì GO ngay, vì hai lý do: (1) chưa có baseline định lượng rõ ràng về tỷ lệ tái khám đúng hạn hiện tại theo từng bệnh viện/khoa để đo lường cải thiện sau khi triển khai — cần thu thập số liệu 2-4 tuần trước khi launch; (2) đội tổng đài và ban điều dưỡng — nhóm chịu ảnh hưởng trực tiếp nhất — chưa được khảo sát mức độ sẵn sàng thay đổi quy trình duyệt nội dung, và đây là rủi ro "người dùng không dùng" lớn hơn rủi ro kỹ thuật. Chi phí xây dựng prototype (1 LLM feature đơn giản, không cần agentic loop) thấp, nên việc trì hoãn 2-4 tuần để xác lập baseline và đồng thuận stakeholder là hợp lý hơn là triển khai vội và phải rollback.
