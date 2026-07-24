@@ -8,18 +8,16 @@
 
 | | |
 |---|---|
-| **Tên nhóm** | `<Điền tên nhóm>` |
+| **Tên nhóm** | AI_Team |
 | **Mảng kinh doanh** | Xanh SM (GSM) — Vận hành xe điện thời gian thực |
 | **Bài toán chọn Deep-Dive** | Trợ lý điều vận sự cố hết pin thực địa (Field-Incident Dispatch Co-pilot) |
 
 | # | Họ và tên | MSSV | Nhiệm vụ chính |
 |---|-----------|------|----------------|
-| 1 | `<Nguyễn Văn A>` | `<20xxxxxxxx>` | Problem Statement & Evaluate |
-| 2 | `<Trần Thị B>` | `<20xxxxxxxx>` | Workflow mapping (04-diagram) |
-| 3 | `<Lê Văn C>` | `<20xxxxxxxx>` | Prompt prototype (Phase 4 code) |
-| 4 | `<Phạm Thị D>` | `<20xxxxxxxx>` | Future-state & AI Fit |
-
-> ⚠️ **Bắt buộc:** điền đầy đủ, chính xác Tên nhóm + Họ tên + MSSV của **từng** thành viên tham gia (đây là căn cứ chấm điểm nhóm).
+| 1 | Kim Mạnh Hưng | 2A202601679 | Prompt prototype (Phase 4 code) |
+| 2 | Ong Xuân Sơn | 2A202601327 | Problem Statement & Evaluate |
+| 3 | Đinh Lê Quỳnh Phương | 2A202600294 | Future-state & AI Fit |
+| 4 | Phùng Văn Linh | 2A202600123 | Workflow mapping (04-diagram) |
 
 ---
 

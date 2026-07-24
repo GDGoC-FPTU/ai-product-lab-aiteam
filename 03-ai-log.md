@@ -2,7 +2,8 @@
 
 > **Deliverable cá nhân (I3 — 15 điểm).** Phản ánh trung thực việc dùng AI (ChatGPT / Gemini / Claude…) làm *thought-partner* trong buổi lab.
 >
-> **Người viết:** `<Họ và tên>` — MSSV `<20xxxxxxxx>` — Nhóm `<Tên nhóm>`
+> **Người viết:** `Kim Mạnh Hưng` — MSSV `2A202601679` — Nhóm `AI_Team`
+
 >
 > _Ghi chú: Đây là bài cá nhân — hãy viết lại bằng **giọng của chính bạn** và thay các ví dụ dưới đây bằng trải nghiệm thật của bạn. Bản dưới là khung mẫu để bạn không bị bí ý._
 
