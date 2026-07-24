@@ -3,7 +3,7 @@
 ## 👥 Thông tin Nhóm Dự án (Group Information)
 * **Tên nhóm:** Vin Smart Future — AI Squad 01
 * **Thành viên nhóm:**
-  1. **Quỳnh Phương** — MSSV: SE202601 (Leader & AI Engineer)
+  1. **Quỳnh Phương** — Mã HV: 2A202601865 (Leader & AI Engineer)
   2. **Trần Thị Bình** — MSSV: 20265678 (Product Manager)
   3. **Lê Hoàng Cường** — MSSV: 20269012 (Data & Systems Architect)
 

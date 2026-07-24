@@ -1,7 +1,7 @@
 # 🔍 01 — Problem Scan & Quick Problem Cards (Vin Smart Future)
 
 **Họ và tên:** Quỳnh Phương  
-**Mã số sinh viên (MSSV):** SE202601  
+**Mã học viên (Mã HV):** 2A202601865  
 **Đơn vị:** Vin Smart Future — AI Product Engineering Lab  
 
 ---
